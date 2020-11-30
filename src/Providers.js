@@ -1,7 +1,8 @@
 import React from 'react';
 import { SSPRDataProvider } from './Context';
+import { cache } from './Cache';
 
-export function SSPRServerProvider({ cache, ...props }) {
+export function SSPRServerProvider({ ...props }) {
   return (
     <SSPRDataProvider
       context={cache.getCache()}

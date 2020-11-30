@@ -6,30 +6,26 @@ and configure the Providers that make the data accessible in the app
 ## In the server rendering
 Create a cache instance
 
-```js
-import {makeExternalDataCache} from 'react-sspr';
-
-const urls = ["https://a-prefetched-url", "..."];
-
-const cache = makeExternalDataCache(urls);
-```
 Where `urls` is an array of URLs to prefetch.
 
 *This array should be removed to have urls dynamically retrieved in a future version*
 
 Wrap the app with `SSPRServerProvider`
 ```jsx 
-import {SSPRClientProvider, makeExternalDataCache} from 'react-sspr';
+import {SSPRServerProvider, addURL} from 'react-sspr';
 
-const urls = ["https://a-prefetched-url", "..."];
-
-const cache = makeExternalDataCache(urls);
-
-<SSPRClientProvider cache={cache}>
+const app = <SSPRServerProvider>
     <YourApp/>
-</SSPRClientProvider>
+</SSPRServerProvider>;
 ```
 
+Add URLs you need cached. This is an async operation and its completion is not required for rendering the app 
+```js
+import {SSPRClientProvider, addURL} from 'react-sspr';
+
+addURL("http://www.test.com");
+```
+TODO document processURL
 ## In client react
 Wrap the app with `SSPRClientProvider`
 ```jsx 
@@ -38,7 +34,7 @@ Wrap the app with `SSPRClientProvider`
 </SSPRClientProvider>
 ```
 
-Simply use the useSSPR hook : 
+Simply use the useSSPR hook in the components: 
 ```js
  const rawCity = useSSPR('https://a-prefetched-url');
 ```
@@ -46,7 +42,7 @@ Simply use the useSSPR hook :
 *This is enough to have external data prefetched and filled in the html, for SEO purpose for example.*
 
 To avoid having a state change on the client side when the data is refetched during hydration,
-add this to your generated html :
+add `renderStaticSSPR`, server-side, to your generated html :
 ```js
 import {renderStaticSSPR} from 'react-sspr';
 
@@ -63,19 +59,17 @@ This is going to pass the prefetched data (only the bit that is currently needed
 No refetch is then needed on the client.
 
 # Refreshing the cache
-The cache is refreshed with every server restart.
-You can also trigger a refresh using `cache.refresh()`
+The cache is refreshed when the server restarts.
+You can also trigger a refresh using `refreshSSPRCache()`
 
 Example with an Express server and a route to trigger a refresh :
 ```js
-import {makeExternalDataCache} from 'react-sspr';
-
-const urls = ["https://a-prefetched-url", "..."];
-
-const cache = makeExternalDataCache(urls);
+import {refreshSSPRCache} from 'react-sspr';
 
 app.get('/refetch-external-data-cache', (req, res) => {
-  cache.refresh();
+  refreshSSPRCache();
 });
-
 ```
+
+
+TODO rename processURL en extractData ou equivalent

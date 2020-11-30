@@ -4,8 +4,8 @@ import {
 
 import useSSPR from './useSSPR';
 
-import { makeExternalDataCache } from './Cache';
+import { renderStaticSSPR, addURL, refreshSSPRCache } from './Cache';
 
 export {
-  SSPRServerProvider, SSPRClientProvider, useSSPR, makeExternalDataCache,
+  SSPRServerProvider, SSPRClientProvider, useSSPR, renderStaticSSPR, addURL, refreshSSPRCache,
 };

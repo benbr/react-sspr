@@ -1,49 +1,21 @@
 import fetch from 'isomorphic-fetch';
 
-const getServerSideData = async (urls) => {
-  let dataUrls = {};
-  // eslint-disable-next-line no-restricted-syntax
-  for (const url of urls) {
-    let usableURL = url;
-    let processURL = null;
+const getData = async (url) => {
+  const data = await fetch(url)
+    .then((r) => r.json())
+    .catch((err) => {
+      console.log(`Error fetching sspr data for ${url} : ${err}`);
+    });
 
-    if (url.url && url.processURL) {
-      usableURL = url.url;
-      processURL = url.processURL;
-    }
-
-    let ret = {};
-
-    // eslint-disable-next-line no-await-in-loop
-    const data = await fetch(usableURL)
-      .then((r) => r.json())
-      .catch((err) => {
-        throw new Error(err);
-      });
-
-    // Check Data Source and return correct key as URL to fetch Client Side
-    if (processURL) {
-      // eslint-disable-next-line no-await-in-loop
-      ret = await processURL(data);
-    } else {
-      ret[url] = data;
-    }
-    dataUrls = { ...dataUrls, ...ret };
-  }
-  return dataUrls;
+  return data;
 };
-
-/**
- * Fetch and process data from external sources for caching purposes
- * @returns {Promise<{}>}
- */
-const resolveUrls = (urls) => getServerSideData(urls);
 
 /**
  * Holds the server-side data cache
  */
-export function makeExternalDataCache(urls) {
-  let cache = {};
+function makeExternalDataCache() {
+  const cache = {};
+  const dataSources = [];
 
   /**
      * used to pass data from react to server then to client
@@ -51,10 +23,19 @@ export function makeExternalDataCache(urls) {
      */
   let currentRender = {};
 
-  const _fetch = () => {
-    resolveUrls(urls).then((d) => {
-      cache = d;
+  const addURL = async (url, processURL = false) => {
+    dataSources.push({
+      url,
+      processURL,
     });
+    const data = await getData(url);
+    if (processURL) {
+      Object.keys(processURL(data)).forEach((pURL) => {
+        cache[pURL] = data[pURL];
+      });
+    } else {
+      cache[url] = data;
+    }
   };
 
   const resetCurrentRender = () => {
@@ -74,10 +55,24 @@ export function makeExternalDataCache(urls) {
   const getCache = () => cache;
 
   const getCurrentRender = () => currentRender;
-  const refresh = () => { _fetch(); };
-  _fetch();
+  const refresh = () => {
+    dataSources.forEach((source) => {
+      addURL(source.url, source.processURL);
+    });
+  };
 
   return {
-    renderStaticSSPR, getCache, getCurrentRender, refresh,
+    renderStaticSSPR, getCache, getCurrentRender, refresh, addURL,
   };
 }
+
+const cache = makeExternalDataCache();
+const renderStaticSSPR = () => cache.renderStaticSSPR();
+const addURL = (url, process) => cache.addURL(url, process);
+const refreshSSPRCache = () => {
+  cache.refresh();
+};
+
+export {
+  cache, renderStaticSSPR, addURL, refreshSSPRCache,
+};
