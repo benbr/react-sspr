@@ -70,6 +70,3 @@ app.get('/refetch-external-data-cache', (req, res) => {
   refreshSSPRCache();
 });
 ```
-
-
-TODO rename processURL en extractData ou equivalent

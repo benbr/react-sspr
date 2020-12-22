@@ -30,8 +30,9 @@ function makeExternalDataCache() {
     });
     const data = await getData(url);
     if (processURL) {
-      Object.keys(processURL(data)).forEach((pURL) => {
-        cache[pURL] = data[pURL];
+      const processedData = processURL(data);
+      Object.keys(processedData).forEach((pURL) => {
+        cache[pURL] = processedData[pURL];
       });
     } else {
       cache[url] = data;
