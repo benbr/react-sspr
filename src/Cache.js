@@ -76,5 +76,5 @@ const refreshSSPRCache = () => {
 const { getCache } = cache;
 
 export {
-  getCache, renderStaticSSPR, addURL, refreshSSPRCache,
+  getCache, renderStaticSSPR, addURL, refreshSSPRCache, cache,
 };
