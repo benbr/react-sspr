@@ -73,7 +73,8 @@ const addURL = (url, process) => cache.addURL(url, process);
 const refreshSSPRCache = () => {
   cache.refresh();
 };
+const { getCache } = cache;
 
 export {
-  cache, renderStaticSSPR, addURL, refreshSSPRCache,
+  getCache, renderStaticSSPR, addURL, refreshSSPRCache,
 };

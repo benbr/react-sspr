@@ -4,8 +4,16 @@ import {
 
 import useSSPR from './useSSPR';
 
-import { renderStaticSSPR, addURL, refreshSSPRCache } from './Cache';
+import {
+  renderStaticSSPR, addURL, refreshSSPRCache, getCache,
+} from './Cache';
 
 export {
-  SSPRServerProvider, SSPRClientProvider, useSSPR, renderStaticSSPR, addURL, refreshSSPRCache,
+  SSPRServerProvider,
+  SSPRClientProvider,
+  useSSPR,
+  renderStaticSSPR,
+  addURL,
+  refreshSSPRCache,
+  getCache,
 };
