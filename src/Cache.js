@@ -23,11 +23,7 @@ function makeExternalDataCache() {
      */
   let currentRender = {};
 
-  const addURL = async (url, processURL = false) => {
-    dataSources.push({
-      url,
-      processURL,
-    });
+  const processData = async (url, processURL = false) => {
     const data = await getData(url);
     if (processURL) {
       const processedData = processURL(data);
@@ -37,6 +33,14 @@ function makeExternalDataCache() {
     } else {
       cache[url] = data;
     }
+  };
+
+  const addURL = async (url, processURL = false) => {
+    dataSources.push({
+      url,
+      processURL,
+    });
+    cache[url] = await processData(url, processURL);
   };
 
   const resetCurrentRender = () => {
@@ -58,7 +62,7 @@ function makeExternalDataCache() {
   const getCurrentRender = () => currentRender;
   const refresh = () => {
     dataSources.forEach((source) => {
-      addURL(source.url, source.processURL);
+      cache[source.url] = processData(source.url, source.processURL);
     });
   };
 
