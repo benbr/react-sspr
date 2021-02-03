@@ -40,7 +40,7 @@ function makeExternalDataCache() {
       url,
       processURL,
     });
-    cache[url] = await processData(url, processURL);
+    await processData(url, processURL);
   };
 
   const resetCurrentRender = () => {
@@ -62,7 +62,7 @@ function makeExternalDataCache() {
   const getCurrentRender = () => currentRender;
   const refresh = () => {
     dataSources.forEach((source) => {
-      cache[source.url] = processData(source.url, source.processURL);
+      processData(source.url, source.processURL);
     });
   };
 
