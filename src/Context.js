@@ -18,7 +18,7 @@ export function SSPRDataProvider({
   const fetchData = async (url) => {
     let urlData = await fetch(url);
     urlData = await urlData.json();
-    setData({ ...data, [url]: urlData });
+    setData((oldData) => ({ ...oldData, [url]: urlData }));
   };
 
   /**
