@@ -1,4 +1,4 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useRef } from 'react';
 import fetch from 'isomorphic-fetch';
 
 export const SSRPDataContext = createContext({});
@@ -14,8 +14,14 @@ export function SSPRDataProvider({
   ...props
 }) {
   const [data, setData] = useState(context);
+  const fetchQueue = useRef([]);
 
   const fetchData = async (url) => {
+    // eslint-disable-next-line no-bitwise
+    if (~fetchQueue.current.indexOf(url)) {
+      return;
+    }
+    fetchQueue.current.push(url);
     let urlData = await fetch(url);
     urlData = await urlData.json();
     setData((oldData) => ({ ...oldData, [url]: urlData }));
